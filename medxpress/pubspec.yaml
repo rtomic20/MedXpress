@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   palette_generator: ^0.3.0
+  google_maps_flutter: ^2.5.0
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
