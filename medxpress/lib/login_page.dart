@@ -5,6 +5,7 @@ import 'home_page_medical_nurse.dart';
 import 'sign_up.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../helpers/api_config.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -90,7 +91,7 @@ class LoginPage extends StatelessWidget {
                   final korisnickoIme = korisnickoImeController.text;
                   final lozinka = passwordController.text;
 
-                  final url = Uri.parse('http://localhost:8000/api/login/');
+                  final url = Uri.parse('$baseUrl/login/');
 
                   final response = await http.post(
                     url,

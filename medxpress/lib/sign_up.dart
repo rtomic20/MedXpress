@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../helpers/api_config.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
@@ -96,8 +97,7 @@ class SignUp extends StatelessWidget {
                     final passwordKorisnika = passwordUser.text;
                     final emailKorisnika = email.text;
 
-                    final url =
-                        Uri.parse('http://localhost:8000/api/register/');
+                    final url = Uri.parse('$baseUrl/login/');
 
                     final response = await http.post(
                       url,

@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
-class Doctorpage extends StatefulWidget {
+class Doctorpage extends StatelessWidget {
   const Doctorpage({super.key});
 
   @override
-  State<Doctorpage> createState() => _DoctorpageState();
-}
-
-class _DoctorpageState extends State<Doctorpage> {
-  late GoogleMapController mapController;
-
-  final LatLng _rijekaCenter = const LatLng(45.3271, 14.4422);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final LatLng rijekaCenter = LatLng(45.3271, 14.4422);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lokacija'),
@@ -28,19 +18,28 @@ class _DoctorpageState extends State<Doctorpage> {
         ),
         backgroundColor: const Color.fromARGB(255, 46, 138, 214),
       ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(
-          target: _rijekaCenter,
-          zoom: 13,
+      body: FlutterMap(
+        options: MapOptions(
+          initialCenter: rijekaCenter,
+          initialZoom: 13.0,
         ),
-        markers: {
-          Marker(
-            markerId: const MarkerId('rijeka'),
-            position: _rijekaCenter,
-            infoWindow: const InfoWindow(title: 'Rijeka'),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.medxpress',
           ),
-        },
+          MarkerLayer(
+            markers: [
+              Marker(
+                width: 60,
+                height: 60,
+                point: rijekaCenter,
+                child:
+                    const Icon(Icons.location_pin, size: 40, color: Colors.red),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
