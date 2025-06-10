@@ -11,7 +11,8 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController korisnickoImeController = TextEditingController();
+    final TextEditingController korisnickoImeController =
+        TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
@@ -49,7 +50,8 @@ class LoginPage extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: const BorderSide(color: Colors.black, width: 2.0),
+                    borderSide:
+                        const BorderSide(color: Colors.black, width: 2.0),
                   ),
                 ),
               ),
@@ -73,7 +75,8 @@ class LoginPage extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: const BorderSide(color: Colors.black, width: 2.0),
+                    borderSide:
+                        const BorderSide(color: Colors.black, width: 2.0),
                   ),
                 ),
               ),
@@ -87,15 +90,13 @@ class LoginPage extends StatelessWidget {
                   final korisnickoIme = korisnickoImeController.text;
                   final lozinka = passwordController.text;
 
-                  final url = Uri.parse('http://10.0.2.2:8000/api/login/');
+                  final url = Uri.parse('http://localhost:8000/api/login/');
 
                   final response = await http.post(
                     url,
                     headers: {'Content-Type': 'application/json'},
-                    body: jsonEncode({
-                      "korisnicko_ime": korisnickoIme,
-                      "lozinka": lozinka
-                    }),
+                    body: jsonEncode(
+                        {"korisnicko_ime": korisnickoIme, "lozinka": lozinka}),
                   );
 
                   if (response.statusCode == 200) {
@@ -107,16 +108,23 @@ class LoginPage extends StatelessWidget {
                     Widget odredisnaStranica;
 
                     if (uloga == 'doktor') {
-                      odredisnaStranica = HomePageDoctor(ime: ime, prezime: prezime);
+                      odredisnaStranica =
+                          HomePageDoctor(ime: ime, prezime: prezime);
                     } else if (uloga == 'sestra') {
-                      odredisnaStranica = HomePageMedicalNurse(ime: ime, prezime: prezime,doktor: doktor,);
+                      odredisnaStranica = HomePageMedicalNurse(
+                        ime: ime,
+                        prezime: prezime,
+                        doktor: doktor,
+                      );
                     } else {
-                      odredisnaStranica = HomePagePacient(ime: ime, prezime: prezime);
+                      odredisnaStranica =
+                          HomePagePacient(ime: ime, prezime: prezime);
                     }
 
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => odredisnaStranica),
+                      MaterialPageRoute(
+                          builder: (context) => odredisnaStranica),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

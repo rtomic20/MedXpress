@@ -16,7 +16,7 @@ class SignUp extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -94,10 +94,10 @@ class SignUp extends StatelessWidget {
                     final prezimeKorisnika = prezime.text;
                     final korisnickoImeKorisnika = korisnickoIme.text;
                     final passwordKorisnika = passwordUser.text;
-                    final emailKorisnika=email.text;
+                    final emailKorisnika = email.text;
 
-                    final url = Uri.parse(
-                        'http://10.0.2.2:8000/api/register/');
+                    final url =
+                        Uri.parse('http://localhost:8000/api/register/');
 
                     final response = await http.post(
                       url,
@@ -106,7 +106,7 @@ class SignUp extends StatelessWidget {
                         "korisnik": {
                           "ime": imeKorisnika,
                           "prezime": prezimeKorisnika,
-                          "email":emailKorisnika, 
+                          "email": emailKorisnika,
                           "korisnicko_ime": korisnickoImeKorisnika,
                           "lozinka_hash": passwordKorisnika
                         }
