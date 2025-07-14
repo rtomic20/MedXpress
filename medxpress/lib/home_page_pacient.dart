@@ -51,18 +51,17 @@ class HomePagePacient extends StatelessWidget {
                           builder: (context) => const Doctorpage()),
                     );
                   },
-                  child: ClipRect(
+                  child: SizedBox(
+                    width: 53,
+                    height: 53,
                     child: Image.asset(
-                      'assets/images/doctor.jpg',
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.contain,
+                      'assets/images/pretrazivanje_doktora_opcenito.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
                 const Text(
-                  'Doctor',
+                  'Pretraživanje',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -75,15 +74,22 @@ class HomePagePacient extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.calendar_month_rounded,
-                    size: 40,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    print("Kalendar kliknut");
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Doctorpage()),
+                    );
                   },
+                  child: SizedBox(
+                    width: 53,
+                    height: 53,
+                    child: Image.asset(
+                      'assets/images/kalendar_opcenito.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const Text(
                   'Kalendar',
@@ -99,15 +105,22 @@ class HomePagePacient extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.person,
-                    size: 40,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    print("Profil kliknut");
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Doctorpage()),
+                    );
                   },
+                  child: SizedBox(
+                    width: 53,
+                    height: 53,
+                    child: Image.asset(
+                      'assets/images/korisnik_profil.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const Text(
                   'Profil',
