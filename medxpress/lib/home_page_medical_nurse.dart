@@ -64,33 +64,65 @@ class HomePageMedicalNurse extends StatelessWidget {
         height: 100,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildNavItem(Icons.calendar_month, 'Kalendar', () {
-              print("Kalendar kliknut");
-            }),
-            _buildNavItem(Icons.chat, 'Razgovor', () {
-              print("Razgovor kliknut");
-            }),
-            _buildNavItem(Icons.person, 'Profil', () {
-              print("Profil kliknut");
-            }),
+            _buildNavItemImage(
+              context,
+              'assets/images/kalendar_opcenito.png',
+              'Kalendar',
+              () {
+                print("Kalendar kliknut");
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => KalendarPage()));
+              },
+            ),
+            _buildNavItemImage(
+              context,
+              'assets/images/razgovori_doktor_medicinska_sestra.png',
+              'Razgovor',
+              () {
+                print("Razgovor kliknut");
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage()));
+              },
+            ),
+            _buildNavItemImage(
+              context,
+              'assets/images/doktor_medicinska_sestra_profil.png',
+              'Profil',
+              () {
+                print("Profil kliknut");
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilPage()));
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildNavItemImage(BuildContext context, String imagePath,
+      String label, VoidCallback onTap) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: Icon(icon, size: 35, color: Colors.white),
-          onPressed: onTap,
+        GestureDetector(
+          onTap: onTap,
+          child: SizedBox(
+            child: Image.asset(
+              imagePath,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         Text(
           label,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );

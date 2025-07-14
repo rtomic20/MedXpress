@@ -28,6 +28,10 @@ flutter:
 
   # Declare assets
   assets:
-    - assets/images/simptomi.jpg
-    - assets/images/kalendar.jpg
-    - assets/images/doctor.jpg
+    - assets/images/doktor_korisnik.png
+    - assets/images/doktor_medicinska_sestra_profil.png
+    - assets/images/kalendar_opcenito.png
+    - assets/images/korisnik_profil.png
+    - assets/images/medicinska_sestra_korisnik.png
+    - assets/images/pretrazivanje_doktora_opcenito.png
+    - assets/images/razgovori_doktor_medicinska_sestra.png
