@@ -93,8 +93,8 @@ class HomePageDoctor extends StatelessWidget {
           child: SizedBox(
             child: Image.asset(
               imagePath,
-              width: 56,
-              height: 56,
+              width: 53,
+              height: 53,
               fit: BoxFit.cover,
             ),
           ),

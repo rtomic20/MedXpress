@@ -52,8 +52,8 @@ class HomePagePacient extends StatelessWidget {
                     );
                   },
                   child: SizedBox(
-                    width: 56,
-                    height: 56,
+                    width: 53,
+                    height: 53,
                     child: Image.asset(
                       'assets/images/pretrazivanje_doktora_opcenito.png',
                       fit: BoxFit.cover,
@@ -83,8 +83,8 @@ class HomePagePacient extends StatelessWidget {
                     );
                   },
                   child: SizedBox(
-                    width: 56,
-                    height: 56,
+                    width: 53,
+                    height: 53,
                     child: Image.asset(
                       'assets/images/kalendar_opcenito.png',
                       fit: BoxFit.cover,
@@ -114,8 +114,8 @@ class HomePagePacient extends StatelessWidget {
                     );
                   },
                   child: SizedBox(
-                    width: 56,
-                    height: 56,
+                    width: 53,
+                    height: 53,
                     child: Image.asset(
                       'assets/images/korisnik_profil.png',
                       fit: BoxFit.cover,
