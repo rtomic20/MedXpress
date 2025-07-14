@@ -91,7 +91,7 @@ class LoginPage extends StatelessWidget {
                   final korisnickoIme = korisnickoImeController.text;
                   final lozinka = passwordController.text;
 
-                  final url = Uri.parse('$baseUrl/login/');
+                  final url = Uri.parse('$baseUrl/api/login/');
 
                   final response = await http.post(
                     url,
