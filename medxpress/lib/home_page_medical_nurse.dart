@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_page_medical_nurse.dart';
 
 class HomePageMedicalNurse extends StatelessWidget {
   final String ime;
@@ -15,7 +16,7 @@ class HomePageMedicalNurse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 29, 115, 195),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -24,20 +25,18 @@ class HomePageMedicalNurse extends StatelessWidget {
             children: [
               Text(
                 'Dobro došli, $ime $prezime!',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 'Vaš doktor: $doktor',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -68,15 +67,6 @@ class HomePageMedicalNurse extends StatelessWidget {
           children: [
             _buildNavItemImage(
               context,
-              'assets/images/kalendar_opcenito.png',
-              'Kalendar',
-              () {
-                print("Kalendar kliknut");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => KalendarPage()));
-              },
-            ),
-            _buildNavItemImage(
-              context,
               'assets/images/razgovori_doktor_medicinska_sestra.png',
               'Razgovor',
               () {
@@ -89,8 +79,15 @@ class HomePageMedicalNurse extends StatelessWidget {
               'assets/images/doktor_medicinska_sestra_profil.png',
               'Profil',
               () {
-                print("Profil kliknut");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProfilPageMedicalNurse(
+                      ime: ime,
+                      prezime: prezime,
+                    ),
+                  ),
+                );
               },
             ),
           ],
@@ -118,11 +115,11 @@ class HomePageMedicalNurse extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
