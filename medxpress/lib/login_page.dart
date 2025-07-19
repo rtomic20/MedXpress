@@ -7,15 +7,20 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../helpers/api_config.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController korisnickoImeController =
-        TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+  State<LoginPage> createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController korisnickoImeController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 29, 115, 195),
       body: Center(
@@ -59,7 +64,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 20),
               TextField(
                 controller: passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   filled: true,
@@ -67,6 +72,19 @@ class LoginPage extends StatelessWidget {
                   labelText: 'Lozinka',
                   labelStyle: const TextStyle(color: Colors.black),
                   prefixIcon: const Icon(Icons.lock, color: Colors.black),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
@@ -96,8 +114,10 @@ class LoginPage extends StatelessWidget {
                   final response = await http.post(
                     url,
                     headers: {'Content-Type': 'application/json'},
-                    body: jsonEncode(
-                        {"korisnicko_ime": korisnickoIme, "lozinka": lozinka}),
+                    body: jsonEncode({
+                      "korisnicko_ime": korisnickoIme,
+                      "lozinka": lozinka,
+                    }),
                   );
 
                   if (response.statusCode == 200) {
@@ -131,7 +151,7 @@ class LoginPage extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Neuspješna prijava")),
                     );
-                    print("Greška: \${response.statusCode}");
+                    print("Greška: ${response.statusCode}");
                     print(response.body);
                   }
                 },

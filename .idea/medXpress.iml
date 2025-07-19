@@ -3,6 +3,9 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/medXpress/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/medXpress/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/medXpress/build" />
       <excludeFolder url="file://$MODULE_DIR$/medxpress/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/medxpress/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/medxpress/build" />

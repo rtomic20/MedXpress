@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'login_page.dart';
+import 'theme_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,16 +17,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MediXpress',
+      themeMode: themeProvider.themeMode,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.lightBlue.shade50,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+        ),
         inputDecorationTheme: const InputDecorationTheme(
-        errorStyle: TextStyle(color: Colors.black),
+          errorStyle: TextStyle(color: Colors.black),
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Colors.black),
         ),
       ),
-      home: const LoginPage(), 
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.grey.shade900,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Colors.white),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          errorStyle: TextStyle(color: Colors.white),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.grey.shade800,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      ),
+      home: const LoginPage(),
     );
   }
 }

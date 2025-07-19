@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_page_medical_nurse.dart';
 
 class HomePageMedicalNurse extends StatelessWidget {
   final String ime;
@@ -15,7 +16,7 @@ class HomePageMedicalNurse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 29, 115, 195),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -24,20 +25,18 @@ class HomePageMedicalNurse extends StatelessWidget {
             children: [
               Text(
                 'Dobro došli, $ime $prezime!',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 'Vaš doktor: $doktor',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -64,33 +63,63 @@ class HomePageMedicalNurse extends StatelessWidget {
         height: 100,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildNavItem(Icons.calendar_month, 'Kalendar', () {
-              print("Kalendar kliknut");
-            }),
-            _buildNavItem(Icons.chat, 'Razgovor', () {
-              print("Razgovor kliknut");
-            }),
-            _buildNavItem(Icons.person, 'Profil', () {
-              print("Profil kliknut");
-            }),
+            _buildNavItemImage(
+              context,
+              'assets/images/razgovori_doktor_medicinska_sestra.png',
+              'Razgovor',
+              () {
+                print("Razgovor kliknut");
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage()));
+              },
+            ),
+            _buildNavItemImage(
+              context,
+              'assets/images/doktor_medicinska_sestra_profil.png',
+              'Profil',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProfilPageMedicalNurse(
+                      ime: ime,
+                      prezime: prezime,
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildNavItemImage(BuildContext context, String imagePath,
+      String label, VoidCallback onTap) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: Icon(icon, size: 35, color: Colors.white),
-          onPressed: onTap,
+        GestureDetector(
+          onTap: onTap,
+          child: SizedBox(
+            child: Image.asset(
+              imagePath,
+              width: 53,
+              height: 53,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         Text(
           label,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );

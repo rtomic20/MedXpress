@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_page_doctor.dart';
 
 class HomePageDoctor extends StatelessWidget {
   final String ime;
@@ -13,17 +14,15 @@ class HomePageDoctor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 29, 115, 195),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             'Dobrodošli, dr. $ime $prezime!',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
       ),
@@ -51,20 +50,10 @@ class HomePageDoctor extends StatelessWidget {
           children: [
             _buildNavItemImage(
               context,
-              'assets/images/kalendar_opcenito.png',
-              'Kalendar',
-              () {
-                print("Kalendar kliknut");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorCalendarPage()));
-              },
-            ),
-            _buildNavItemImage(
-              context,
               'assets/images/razgovori_doktor_medicinska_sestra.png',
               'Poruke',
               () {
                 print("Poruke kliknute");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => MessagesPage()));
               },
             ),
             _buildNavItemImage(
@@ -72,8 +61,15 @@ class HomePageDoctor extends StatelessWidget {
               'assets/images/doktor_medicinska_sestra_profil.png',
               'Profil',
               () {
-                print("Profil kliknuti");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorProfilePage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProfilPageDoctor(
+                      ime: ime,
+                      prezime: prezime,
+                    ),
+                  ),
+                );
               },
             ),
           ],
@@ -101,11 +97,11 @@ class HomePageDoctor extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
