@@ -21,53 +21,54 @@ class _HomePagePacientState extends State<HomePagePacient> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Dobro došao, ${widget.ime} ${widget.prezime}!',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            CalendarCarousel(
-              onDayPressed: (date, events) {
-                setState(() {
-                  _selectedDate = date;
-                });
-              },
-              selectedDateTime: _selectedDate,
-              height: 400.0,
-              showOnlyCurrentMonthDate: true,
-              daysHaveCircularBorder: true,
-              weekFormat: false,
-              customGridViewPhysics: const BouncingScrollPhysics(),
-              thisMonthDayBorderColor: Colors.grey,
-              selectedDayButtonColor: Colors.blue,
-              selectedDayBorderColor: Colors.white,
-              todayButtonColor: Colors.lightBlue,
-              todayTextStyle: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(
+                'Dobro došao, ${widget.ime} ${widget.prezime}!',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
               ),
-              weekendTextStyle: const TextStyle(color: Colors.black),
-              daysTextStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 14,
+              const SizedBox(height: 20),
+              CalendarCarousel(
+                onDayPressed: (date, events) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                },
+                selectedDateTime: _selectedDate,
+                height: 400.0,
+                showOnlyCurrentMonthDate: true,
+                daysHaveCircularBorder: true,
+                weekFormat: false,
+                customGridViewPhysics: const BouncingScrollPhysics(),
+                thisMonthDayBorderColor: Colors.grey,
+                selectedDayButtonColor: Colors.blue,
+                selectedDayBorderColor: Colors.white,
+                todayButtonColor: Colors.lightBlue,
+                todayTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                weekendTextStyle: const TextStyle(color: Colors.black),
+                daysTextStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+                weekdayTextStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+                inactiveDaysTextStyle: const TextStyle(
+                  color: Colors.grey,
+                ),
               ),
-              weekdayTextStyle: const TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-              ),
-              inactiveDaysTextStyle: const TextStyle(
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(

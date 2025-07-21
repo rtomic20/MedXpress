@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import '../helpers/api_config.dart';
 
 class Doctorpage extends StatefulWidget {
   const Doctorpage({super.key});
@@ -42,14 +43,15 @@ class _DoctorpageState extends State<Doctorpage> {
     setState(() {
       _userLocation = LatLng(pos.latitude, pos.longitude);
     });
+
+    _mapController.move(LatLng(pos.latitude, pos.longitude), 15.0);
   }
 
   Future<void> _fetchInfirmaries() async {
-    final response =
-        await http.get(Uri.parse('http://10.0.2.2:8000/api/infirmaries'));
+    final response = await http.get(Uri.parse('$baseUrl/api/infirmaries'));
 
     if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
+      final List data = json.decode(utf8.decode(response.bodyBytes));
       final List<Marker> newMarkers = [];
 
       for (var inf in data) {
@@ -119,20 +121,6 @@ class _DoctorpageState extends State<Doctorpage> {
     );
   }
 
-  void _zoomIn() {
-    setState(() {
-      _mapZoom += 1;
-      _mapController.move(_center, _mapZoom);
-    });
-  }
-
-  void _zoomOut() {
-    setState(() {
-      _mapZoom -= 1;
-      _mapController.move(_center, _mapZoom);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,30 +168,6 @@ class _DoctorpageState extends State<Doctorpage> {
           ),
           Positioned(
             bottom: 20,
-            right: 10,
-            child: Column(
-              children: [
-                FloatingActionButton(
-                  heroTag: "zoomIn",
-                  mini: true,
-                  onPressed: _zoomIn,
-                  child: const Icon(Icons.add),
-                ),
-                const SizedBox(height: 8),
-                FloatingActionButton(
-                  heroTag: "zoomOut",
-                  mini: true,
-                  onPressed: _zoomOut,
-                  child: const Icon(Icons.remove),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Positioned(
-            bottom: 90,
             right: 10,
             child: FloatingActionButton(
               heroTag: "centerUser",
