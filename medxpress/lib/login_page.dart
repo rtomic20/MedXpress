@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Dobro došli u MediXpress',
+                'Dobro došli u MedXpress',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -141,7 +141,6 @@ class _LoginPageState extends State<LoginPage> {
                       odredisnaStranica =
                           HomePagePacient(ime: ime, prezime: prezime);
                     }
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
