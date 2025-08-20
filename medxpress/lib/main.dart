@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'MediXpress',
+      title: 'MedXpress',
       themeMode: themeProvider.themeMode,
       theme: ThemeData(
         primarySwatch: Colors.blue,

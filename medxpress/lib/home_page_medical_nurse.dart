@@ -71,7 +71,6 @@ class HomePageMedicalNurse extends StatelessWidget {
               'Razgovor',
               () {
                 print("Razgovor kliknut");
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage()));
               },
             ),
             _buildNavItemImage(

@@ -4,10 +4,22 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+
 import '../helpers/api_config.dart';
+import '../helpers/chatservice.dart';
+import 'chat_page.dart';
 
 class Doctorpage extends StatefulWidget {
-  const Doctorpage({super.key});
+  const Doctorpage({
+    super.key,
+    required this.pacijentId,
+    required this.pacijentIme,
+    required this.pacijentPrezime,
+  });
+
+  final int pacijentId;
+  final String pacijentIme;
+  final String pacijentPrezime;
 
   @override
   State<Doctorpage> createState() => _DoctorpageState();
@@ -15,10 +27,11 @@ class Doctorpage extends StatefulWidget {
 
 class _DoctorpageState extends State<Doctorpage> {
   final LatLng _center = LatLng(45.3271, 14.4422);
-  List<Marker> _markers = [];
-  late MapController _mapController;
+  late final MapController _mapController;
   double _mapZoom = 13.0;
+
   LatLng? _userLocation;
+  List<Marker> _markers = [];
 
   @override
   void initState() {
@@ -29,10 +42,10 @@ class _DoctorpageState extends State<Doctorpage> {
   }
 
   Future<void> _getUserLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
 
-    LocationPermission permission = await Geolocator.checkPermission();
+    var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) return;
@@ -40,52 +53,75 @@ class _DoctorpageState extends State<Doctorpage> {
     if (permission == LocationPermission.deniedForever) return;
 
     final pos = await Geolocator.getCurrentPosition();
-    setState(() {
-      _userLocation = LatLng(pos.latitude, pos.longitude);
-    });
-
-    _mapController.move(LatLng(pos.latitude, pos.longitude), 15.0);
+    setState(() => _userLocation = LatLng(pos.latitude, pos.longitude));
+    _mapController.move(_userLocation!, 15.0);
   }
 
   Future<void> _fetchInfirmaries() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/infirmaries'));
+    final String api = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
 
-    if (response.statusCode == 200) {
-      final List data = json.decode(utf8.decode(response.bodyBytes));
-      final List<Marker> newMarkers = [];
-
-      for (var inf in data) {
-        final lat = double.tryParse(inf['lat'].toString()) ?? 0;
-        final lng = double.tryParse(inf['long'].toString()) ?? 0;
-        final name = inf['Infirmary_name'] ?? 'Nepoznata ambulanta';
-        final doktor = inf['doktor_ime'] ?? 'Nepoznat';
-        final sestra = inf['sestra_ime'] ?? 'Nepoznata';
-
-        newMarkers.add(
-          Marker(
-            width: 60,
-            height: 60,
-            point: LatLng(lat, lng),
-            child: GestureDetector(
-              onTap: () => _showInfirmaryDetails(name, doktor, sestra),
-              child:
-                  const Icon(Icons.location_pin, size: 40, color: Colors.red),
-            ),
-          ),
-        );
-      }
-
-      setState(() {
-        _markers = newMarkers;
-      });
+    final res = await http.get(Uri.parse('$api/infirmaries/'));
+    if (res.statusCode != 200) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Greška ${res.statusCode} pri čitanju ambulanti')),
+      );
+      return;
     }
+
+    final List list = jsonDecode(utf8.decode(res.bodyBytes));
+    final List<Marker> ms = [];
+
+    for (final inf in list) {
+      final lat = double.tryParse(inf['lat'].toString()) ?? 0;
+      final lng = double.tryParse(inf['long'].toString()) ?? 0;
+
+      final String name = inf['Infirmary_name'] ?? 'Nepoznata ambulanta';
+      final String doktorIme = inf['doktor_ime'] ?? 'Nepoznat';
+      final String sestraIme = inf['sestra_ime'] ?? 'Nepoznata';
+
+      final int? doktorId = inf['doktor'];
+      final int? sestraId = inf['medicinska_sestra'];
+
+      ms.add(
+        Marker(
+          width: 60,
+          height: 60,
+          point: LatLng(lat, lng),
+          child: GestureDetector(
+            onTap: () => _showInfirmaryDetails(
+              name: name,
+              doktorIme: doktorIme,
+              sestraIme: sestraIme,
+              doktorId: doktorId,
+              sestraId: sestraId,
+            ),
+            child: const Icon(Icons.location_pin, size: 40, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
+    setState(() => _markers = ms);
   }
 
-  void _showInfirmaryDetails(String name, String doktor, String sestra) {
+  void _showInfirmaryDetails({
+    required String name,
+    required String doktorIme,
+    required String sestraIme,
+    required int? doktorId,
+    required int? sestraId,
+  }) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -93,24 +129,85 @@ class _DoctorpageState extends State<Doctorpage> {
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text("Doktor: $doktor"),
-            Text("Sestra: $sestra"),
+            Text("Doktor: $doktorIme"),
+            Text("Sestra: $sestraIme"),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                // Kontakt doktor
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: otvori ekran za kontakt doktora
-                  },
-                  icon: const Icon(Icons.phone),
+                  onPressed: (doktorId == null)
+                      ? null
+                      : () async {
+                          Navigator.of(context).pop(); // zatvori sheet
+                          try {
+                            final convId = await ChatServiceHelper.instance
+                                .startChatWithDoctor(
+                              pacijentId: widget.pacijentId,
+                              doktorId: doktorId!,
+                              pacijentKorisnikId: widget.pacijentId,
+                              doktorKorisnikId: doktorId!,
+                              title: 'Pacijent–Doktor',
+                            );
+
+                            if (!mounted) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChatPage(
+                                  conversationId: convId,
+                                  senderKorisnikId: widget.pacijentId,
+                                  title: 'Doktor $doktorIme',
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Greška: $e')),
+                            );
+                          }
+                        },
+                  icon: const Icon(Icons.chat_bubble_outline),
                   label: const Text("Kontakt doktor"),
                 ),
+
+                // Kontakt sestra
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: otvori ekran za kontakt sestre
-                  },
-                  icon: const Icon(Icons.phone),
+                  onPressed: (sestraId == null)
+                      ? null
+                      : () async {
+                          Navigator.of(context).pop();
+                          try {
+                            final convId = await ChatServiceHelper.instance
+                                .startChatWithNurse(
+                              pacijentId: widget.pacijentId,
+                              sestraId: sestraId!,
+                              pacijentKorisnikId: widget.pacijentId,
+                              sestraKorisnikId: sestraId!,
+                              title: 'Pacijent–Sestra',
+                            );
+
+                            if (!mounted) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChatPage(
+                                  conversationId: convId,
+                                  senderKorisnikId: widget.pacijentId,
+                                  title: 'Sestra $sestraIme',
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Greška: $e')),
+                            );
+                          }
+                        },
+                  icon: const Icon(Icons.chat_bubble_outline),
                   label: const Text("Kontakt sestra"),
                 ),
               ],
