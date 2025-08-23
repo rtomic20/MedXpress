@@ -94,10 +94,9 @@ class SignUp extends StatelessWidget {
                     final imeKorisnika = ime.text;
                     final prezimeKorisnika = prezime.text;
                     final korisnickoImeKorisnika = korisnickoIme.text;
-                    final passwordKorisnika = passwordUser.text;
                     final emailKorisnika = email.text;
 
-                    final url = Uri.parse('$baseUrl/login/');
+                    final url = Uri.parse('$baseUrl/register/');
 
                     final response = await http.post(
                       url,
@@ -108,10 +107,12 @@ class SignUp extends StatelessWidget {
                           "prezime": prezimeKorisnika,
                           "email": emailKorisnika,
                           "korisnicko_ime": korisnickoImeKorisnika,
-                          "lozinka_hash": passwordKorisnika
+                          "lozinka_hash": passwordUser.text,
                         }
                       }),
                     );
+                    print("Response status: ${response.statusCode}");
+                    print("Response body: ${response.body}");
 
                     if (response.statusCode == 201) {
                       print("✅ Registracija uspješna");

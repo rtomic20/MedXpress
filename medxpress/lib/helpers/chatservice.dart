@@ -139,11 +139,15 @@ class ChatServiceHelper {
     return (first['id'] as num).toInt();
   }
 
-  /// --- NOVO: Lista razgovora filtrirano po ulozi (doktor/sestra) ---
   Future<List<Map<String, dynamic>>> listConversationsByRole({
     required int pacijentId,
     required String role,
   }) async {
+    final isDoctorLookingForPatients = role.toLowerCase() == 'pacijent';
+    final isPatientLookingForDoctors = role.toLowerCase() == 'doktor';
+    final isPatientLookingForNurses = role.toLowerCase() == 'sestra';
+    final isNurseLookingForPatients = role.toLowerCase() == 'pacijent_sestra';
+
     final convRes = await http.get(
       Uri.parse("$_api/conversations/").replace(queryParameters: {
         'user_id': '$pacijentId',
@@ -152,40 +156,146 @@ class ChatServiceHelper {
     _ensureOk(convRes, [200]);
 
     final List convs = jsonDecode(utf8.decode(convRes.bodyBytes)) as List;
-    final results = <Map<String, dynamic>>[];
 
-    for (final raw in convs.cast<Map<String, dynamic>>()) {
+    final byPair = <String, Map<String, dynamic>>{};
+
+    int _ts(dynamic x) {
+      final v = (x is Map<String, dynamic>)
+          ? (x['last_ts'] ??
+              x['last_message_ts'] ??
+              x['updated_at'] ??
+              x['created_at'])
+          : x;
+      if (v is int) return v;
+      if (v is String) {
+        final dt = DateTime.tryParse(v);
+        if (dt != null) return dt.millisecondsSinceEpoch;
+        final n = int.tryParse(v);
+        if (n != null) return n;
+      }
+      return 0;
+    }
+
+    for (final rawAny in convs) {
+      final raw = (rawAny as Map).cast<String, dynamic>();
       final convId = (raw['id'] as num?)?.toInt();
       if (convId == null) continue;
 
-      // Ako backend vraća sudionike direktno u razgovoru
-      final participants = (raw['participants'] as List?) ?? [];
+      final participants =
+          (raw['participants'] as List?)?.cast<Map<String, dynamic>>() ??
+              const [];
 
-      final other = participants.cast<Map<String, dynamic>>().firstWhere(
-            (p) => (p['uloga'] ?? p['role'] ?? '')
-                .toString()
-                .toLowerCase()
-                .contains(role.toLowerCase()),
-            orElse: () => {},
-          );
+      Map<String, dynamic>? doctorP;
+      Map<String, dynamic>? patientP;
+      Map<String, dynamic>? nurseP;
 
-      if (other.isEmpty) continue;
+      for (final pAny in participants) {
+        final p = pAny.map((k, v) => MapEntry(k.toString(), v));
+        final roleStr =
+            ((p['uloga'] ?? p['role'] ?? '') as String).toLowerCase();
+        if (roleStr.contains('doktor')) doctorP ??= p;
+        if (roleStr.contains('pacijent')) patientP ??= p;
+        if (roleStr.contains('sestra')) nurseP ??= p;
+      }
 
-      final ime = (other['ime'] ?? '').toString();
-      final prezime = (other['prezime'] ?? '').toString();
-      final title = (ime.isNotEmpty || prezime.isNotEmpty)
-          ? '$ime $prezime'
-          : (role.toLowerCase() == 'doktor' ? 'Doktor' : 'Sestra');
+      if (doctorP != null && patientP != null) {
+        final doctorKId =
+            (doctorP['korisnik_id'] ?? doctorP['user_id']) as int?;
+        final patientKId =
+            (patientP['korisnik_id'] ?? patientP['user_id']) as int?;
+        if (doctorKId == null || patientKId == null) continue;
 
-      results.add({
-        'id': convId,
-        'title': title,
-        'otherKorisnikId':
-            (other['korisnik_id'] ?? other['user_id'] ?? 0) as int,
-      });
+        final include =
+            (isDoctorLookingForPatients && doctorKId == pacijentId) ||
+                (isPatientLookingForDoctors && patientKId == pacijentId);
+        if (!include) {
+        } else {
+          String title;
+          int otherKorisnikId;
+          if (isDoctorLookingForPatients) {
+            final ime = (patientP['ime'] ?? '').toString();
+            final prezime = (patientP['prezime'] ?? '').toString();
+            title = (ime.isNotEmpty || prezime.isNotEmpty)
+                ? '$ime $prezime'
+                : 'Pacijent';
+            otherKorisnikId = patientKId;
+          } else {
+            final ime = (doctorP['ime'] ?? '').toString();
+            final prezime = (doctorP['prezime'] ?? '').toString();
+            title = (ime.isNotEmpty || prezime.isNotEmpty)
+                ? '$ime $prezime'
+                : 'Doktor';
+            otherKorisnikId = doctorKId;
+          }
+
+          final key = 'D_${doctorKId}_P_${patientKId}';
+          final candidate = {
+            'id': convId,
+            'title': title,
+            'otherKorisnikId': otherKorisnikId,
+            'doctor_korisnik_id': doctorKId,
+            'patient_korisnik_id': patientKId,
+            'last_ts': raw['last_ts'] ??
+                raw['last_message_ts'] ??
+                raw['updated_at'] ??
+                raw['created_at'],
+          };
+
+          if (!byPair.containsKey(key) || _ts(candidate) > _ts(byPair[key])) {
+            byPair[key] = candidate;
+          }
+        }
+      }
+
+      if (nurseP != null && patientP != null) {
+        final nurseKId = (nurseP['korisnik_id'] ?? nurseP['user_id']) as int?;
+        final patientKId =
+            (patientP['korisnik_id'] ?? patientP['user_id']) as int?;
+        if (nurseKId == null || patientKId == null) continue;
+
+        final include = (isNurseLookingForPatients && nurseKId == pacijentId) ||
+            (isPatientLookingForNurses && patientKId == pacijentId);
+        if (!include) {
+        } else {
+          String title;
+          int otherKorisnikId;
+          if (isNurseLookingForPatients) {
+            final ime = (patientP['ime'] ?? '').toString();
+            final prezime = (patientP['prezime'] ?? '').toString();
+            title = (ime.isNotEmpty || prezime.isNotEmpty)
+                ? '$ime $prezime'
+                : 'Pacijent';
+            otherKorisnikId = patientKId;
+          } else {
+            final ime = (nurseP['ime'] ?? '').toString();
+            final prezime = (nurseP['prezime'] ?? '').toString();
+            title = (ime.isNotEmpty || prezime.isNotEmpty)
+                ? '$ime $prezime'
+                : 'Sestra';
+            otherKorisnikId = nurseKId;
+          }
+
+          final key = 'N_${nurseKId}_P_${patientKId}';
+          final candidate = {
+            'id': convId,
+            'title': title,
+            'otherKorisnikId': otherKorisnikId,
+            'nurse_korisnik_id': nurseKId,
+            'patient_korisnik_id': patientKId,
+            'last_ts': raw['last_ts'] ??
+                raw['last_message_ts'] ??
+                raw['updated_at'] ??
+                raw['created_at'],
+          };
+
+          if (!byPair.containsKey(key) || _ts(candidate) > _ts(byPair[key])) {
+            byPair[key] = candidate;
+          }
+        }
+      }
     }
 
-    return results;
+    return byPair.values.toList();
   }
 
   void _ensureOk(http.Response res, List<int> ok) {

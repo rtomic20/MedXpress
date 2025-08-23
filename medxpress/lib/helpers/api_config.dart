@@ -5,7 +5,7 @@ String get baseUrl {
   if (kIsWeb) {
     return 'http://localhost:8000/api';
   } else if (Platform.isAndroid) {
-    return 'https://d4648ae5c63a.ngrok-free.app/api';
+    return 'https://4b1ff4ea1410.ngrok-free.app/api';
   } else {
     return 'http://10.0.2.2:8000/api';
   }

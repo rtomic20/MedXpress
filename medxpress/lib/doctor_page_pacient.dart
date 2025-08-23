@@ -135,12 +135,11 @@ class _DoctorpageState extends State<Doctorpage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Kontakt doktor
                 ElevatedButton.icon(
                   onPressed: (doktorId == null)
                       ? null
                       : () async {
-                          Navigator.of(context).pop(); // zatvori sheet
+                          Navigator.of(context).pop();
                           try {
                             final convId = await ChatServiceHelper.instance
                                 .startChatWithDoctor(
@@ -172,8 +171,6 @@ class _DoctorpageState extends State<Doctorpage> {
                   icon: const Icon(Icons.chat_bubble_outline),
                   label: const Text("Kontakt doktor"),
                 ),
-
-                // Kontakt sestra
                 ElevatedButton.icon(
                   onPressed: (sestraId == null)
                       ? null

@@ -49,40 +49,50 @@ class _LoginPageState extends State<LoginPage> {
 
       if (res.statusCode == 200) {
         final data = jsonDecode(utf8.decode(res.bodyBytes));
-        // Očekujemo da backend vrati ove ključeve:
-        final int? id = (data['id'] as num?)?.toInt(); // korisnik/pacijent id
+
+        // Obavezna polja
+        final int? korisnikId = (data['id'] as num?)?.toInt();
         final String ime = (data['ime'] ?? '').toString();
         final String prezime = (data['prezime'] ?? '').toString();
         final String uloga = (data['uloga'] ?? '').toString();
+
+        // Dodatna polja iz backend-a
+        final int? pacijentModelId = (data['pacijent_id'] as num?)?.toInt();
+        final int? doktorModelId = (data['doktor_id'] as num?)?.toInt();
+        final int? sestraModelId = (data['sestra_id'] as num?)?.toInt();
         final String doktorIme = (data['doktor_ime'] ?? '').toString();
 
-        Widget odredisnaStranica;
+        if (korisnikId == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Nedostaje ID korisnika u odgovoru.')),
+          );
+          setState(() => _loading = false);
+          return;
+        }
+
+        late final Widget odredisnaStranica;
 
         if (uloga == 'doktor') {
-          // ostavljam tvoj postojeći konstruktor
           odredisnaStranica = HomePageDoctor(
             ime: ime,
             prezime: prezime,
+            korisnikId: korisnikId, // <-- BITNO za /change-password
+            doktorId: doktorModelId ?? korisnikId,
           );
         } else if (uloga == 'sestra') {
-          // ostavljam tvoj postojeći konstruktor
           odredisnaStranica = HomePageMedicalNurse(
             ime: ime,
             prezime: prezime,
             doktor: doktorIme,
+            pacijentId: sestraModelId ?? korisnikId, // sestra_id (model)
+            korisnikId: korisnikId, // <-- DODANO
+            doktorId: doktorModelId,
           );
         } else {
-          // pacijent – prosljeđujemo pacijentId
-          if (id == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Nedostaje ID korisnika u odgovoru.')),
-            );
-            setState(() => _loading = false);
-            return;
-          }
+          // PACIJENT
           odredisnaStranica = HomePagePacient(
-            pacijentId: id,
+            korisnikId: korisnikId, // <--- bitno
+            pacijentId: pacijentModelId ?? korisnikId, // fallback
             ime: ime,
             prezime: prezime,
           );
@@ -128,8 +138,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Korisničko ime
                 TextField(
                   controller: korisnickoImeController,
                   style: const TextStyle(color: Colors.black),
@@ -154,8 +162,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Lozinka
                 TextField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -192,8 +198,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Login button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -212,10 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                         : const Text('Login'),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Registracija
                 TextButton(
                   onPressed: () {
                     Navigator.push(
